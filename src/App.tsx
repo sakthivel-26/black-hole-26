@@ -3,6 +3,7 @@ import { Toaster } from 'react-hot-toast';
 import { AnimatePresence } from 'framer-motion';
 import { usePlayerStore } from './store/usePlayerStore';
 import { Capacitor } from '@capacitor/core';
+import { App as CapApp } from '@capacitor/app';
 
 import Sidebar from './components/Sidebar';
 import PlayerBar from './components/PlayerBar';
@@ -32,17 +33,17 @@ function App() {
 
     const setupListener = async () => {
       try {
-        const { App: CapApp } = await import('@capacitor/app');
-        
         backButtonListener = await CapApp.addListener('backButton', () => {
           const state = usePlayerStore.getState();
           
           if (state.showNowPlaying) {
-            state.setShowNowPlaying(false);
+            if (state.showLyrics) {
+              state.setShowLyrics(false);
+            } else {
+              state.setShowNowPlaying(false);
+            }
           } else if (state.showQueue) {
             state.setShowQueue(false);
-          } else if (state.showLyrics && window.innerWidth >= 768) {
-            state.setShowLyrics(false);
           } else if (state.viewHistory.length > 0) {
             state.goBack();
           } else if (state.currentView !== 'home') {
