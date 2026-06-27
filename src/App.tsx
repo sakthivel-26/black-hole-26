@@ -1,5 +1,5 @@
 import { Suspense, lazy, useEffect } from 'react';
-import { Toaster } from 'react-hot-toast';
+import { Toaster, toast } from 'react-hot-toast';
 import { AnimatePresence } from 'framer-motion';
 import { usePlayerStore } from './store/usePlayerStore';
 import { Capacitor } from '@capacitor/core';
@@ -30,6 +30,7 @@ function App() {
     if (!Capacitor.isNativePlatform()) return;
 
     let backButtonListener: any = null;
+    let lastBackPressTime = 0;
 
     const setupListener = async () => {
       try {
@@ -49,7 +50,17 @@ function App() {
           } else if (state.currentView !== 'home') {
             state.setView('home');
           } else {
-            void CapApp.minimizeApp();
+            const now = Date.now();
+            if (now - lastBackPressTime < 2000) {
+              void CapApp.minimizeApp();
+            } else {
+              lastBackPressTime = now;
+              toast('Press back again to exit', {
+                duration: 2000,
+                icon: '🚪',
+                id: 'back-exit-toast',
+              });
+            }
           }
         });
       } catch (e) {
