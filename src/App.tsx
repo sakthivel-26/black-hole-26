@@ -29,6 +29,13 @@ function App() {
 
   useEffect(() => {
     void usePlayerStore.getState().hydrateCloudData();
+
+    // Request notification permissions for background MediaSession controls (Android 13+)
+    if (Capacitor.isNativePlatform() && 'Notification' in window) {
+      if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+        void Notification.requestPermission();
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -123,6 +130,12 @@ function App() {
 
   return (
     <div className="flex h-full w-full overflow-hidden bg-[#1c1c1e] text-white select-none">
+      {/* Status Bar Blocker (Cuts the top camera/battery area) */}
+      <div
+        className="fixed top-0 left-0 right-0 z-[1000] bg-[#1c1c1e] pointer-events-none"
+        style={{ height: 'env(safe-area-inset-top, 0px)' }}
+      />
+
       {/* Background Glow */}
       <div 
         className="fixed inset-0 pointer-events-none transition-colors duration-1000 opacity-20"
@@ -135,7 +148,10 @@ function App() {
       {/* App Structure */}
       <Sidebar />
       
-      <main className="flex-1 relative overflow-y-auto overflow-x-hidden hide-scrollbar">
+      <main
+        className="flex-1 relative overflow-y-auto overflow-x-hidden hide-scrollbar"
+        style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 60px)' }}
+      >
         <div className="mx-auto min-h-full max-w-[1560px]">
           <Suspense fallback={
             <div className="flex items-center justify-center h-full">

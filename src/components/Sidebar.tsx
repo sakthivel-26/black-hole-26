@@ -23,7 +23,10 @@ export default function Sidebar() {
         {/* Logo */}
         <div className="px-6 py-5 flex items-center gap-3">
           <img
-            src="/black-hole-logo.svg"
+            src="/logo.png"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = "/black-hole-logo.svg";
+            }}
             alt="Black Hole logo"
             className="h-10 w-10 rounded-xl object-cover shadow-[0_10px_24px_rgba(255,110,24,0.22)]"
           />

@@ -227,7 +227,10 @@ export default function SearchPage() {
         </p>
       </header>
 
-      <div className="sticky top-0 z-30 -mx-4 mb-6 border-b border-white/6 bg-[#1c1c1e]/92 px-4 py-4 backdrop-blur-2xl md:-mx-8 md:px-8">
+      <div
+        className="sticky top-0 z-30 -mx-4 mb-6 border-b border-white/6 bg-[#1c1c1e]/92 px-4 py-4 backdrop-blur-2xl md:-mx-8 md:px-8"
+        style={{ top: 'env(safe-area-inset-top, 0px)' }}
+      >
         <div className="relative max-w-3xl">
           <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-white/35" size={19} />
           <input

@@ -104,7 +104,10 @@ export default function NowPlaying() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.16),transparent_28%),linear-gradient(180deg,rgba(0,0,0,0.18),rgba(0,0,0,0.52)_52%,rgba(0,0,0,0.76)_100%)]" />
       </div>
 
-      <div className="relative z-10 flex h-full flex-col px-4 pb-6 pt-4 md:px-8 md:pb-8">
+      <div
+        className="relative z-10 flex h-full flex-col px-4 pb-6 pt-4 md:px-8 md:pb-8"
+        style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 40px)' }}
+      >
         <div className="mb-4 hidden md:flex items-center justify-between">
           <button
             onClick={() => setShowNowPlaying(false)}
