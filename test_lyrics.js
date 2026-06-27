@@ -1,4 +1,4 @@
-const query = "Raathu Raasan";
+const query = "Annul Maelae Harris Jayaraj";
 
 async function testLrcLibSearch() {
   const url = `https://lrclib.net/api/search?q=${encodeURIComponent(query)}`;
@@ -10,15 +10,15 @@ async function testLrcLibSearch() {
       const data = await res.json();
       console.log('Results count:', data.length);
       if (data.length > 0) {
-        const first = data[0];
-        console.log('First result:', {
-          trackName: first.trackName,
-          artistName: first.artistName,
-          albumName: first.albumName,
-          hasSynced: !!first.syncedLyrics,
-          hasPlain: !!first.plainLyrics
+        data.slice(0, 5).forEach((item, index) => {
+          console.log(`[${index}] Match:`, {
+            trackName: item.trackName,
+            artistName: item.artistName,
+            albumName: item.albumName,
+            hasSynced: !!item.syncedLyrics,
+            hasPlain: !!item.plainLyrics
+          });
         });
-        console.log('Synced lyrics preview:', first.syncedLyrics ? first.syncedLyrics.substring(0, 100) : 'None');
       }
     } else {
       console.log('LrcLib Search Error:', await res.text());

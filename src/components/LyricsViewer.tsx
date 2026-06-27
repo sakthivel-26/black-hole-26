@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FiMusic, FiLoader } from 'react-icons/fi';
+import { motion } from 'framer-motion';
 import { usePlayerStore } from '../store/usePlayerStore';
 import { getSongLyrics } from '../services/api';
 
@@ -42,7 +43,6 @@ export default function LyricsViewer() {
   });
 
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const activeRef = useRef<HTMLButtonElement | null>(null);
 
   // Fetch lyrics on song change
   useEffect(() => {
@@ -78,8 +78,13 @@ export default function LyricsViewer() {
         }
 
         if (Array.isArray(results) && results.length > 0 && active) {
-          // Find the best match that has synced or plain lyrics
-          const match = results.find((r: any) => r.syncedLyrics || r.plainLyrics);
+          // Prioritize matches that have synced lyrics first
+          let match = results.find((r: any) => r.syncedLyrics && r.syncedLyrics.trim().length > 0);
+          if (!match) {
+            // Otherwise, fallback to matches that have plain lyrics
+            match = results.find((r: any) => r.plainLyrics && r.plainLyrics.trim().length > 0);
+          }
+
           if (match) {
             if (match.syncedLyrics) {
               const parsed = parseLRC(match.syncedLyrics);
@@ -154,7 +159,7 @@ export default function LyricsViewer() {
         }
         return;
       }
-      const activeLine = activeRef.current;
+      const activeLine = container?.querySelector(`#lyric-line-${activeLineIndex}`) as HTMLElement;
       if (container && activeLine) {
         const containerHeight = container.clientHeight;
         const activeLineHeight = activeLine.clientHeight;
@@ -215,7 +220,7 @@ export default function LyricsViewer() {
   return (
     <div
       ref={containerRef}
-      className="h-full w-full overflow-y-auto px-6 py-28 md:px-10 hide-scrollbar scroll-smooth select-none"
+      className="relative h-full w-full overflow-y-auto px-6 py-28 md:px-10 hide-scrollbar select-none"
       style={{
         maskImage: 'linear-gradient(to bottom, transparent 0%, white 20%, white 80%, transparent 100%)',
         WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, white 20%, white 80%, transparent 100%)',
@@ -227,20 +232,23 @@ export default function LyricsViewer() {
           const isPassed = index < activeLineIndex;
 
           return (
-            <button
+            <motion.button
               key={index}
-              ref={isActive ? activeRef : null}
+              id={`lyric-line-${index}`}
               onClick={() => seekTo(line.time)}
-              className={`w-full text-left font-bold text-xl md:text-2xl lg:text-3xl tracking-tight leading-snug focus:outline-none transition-all duration-300 transform origin-left py-1 active:scale-[0.98] ${
-                isActive
-                  ? 'text-white opacity-100 scale-[1.02] filter drop-shadow-[0_4px_10px_rgba(255,255,255,0.2)]'
-                  : isPassed
-                  ? 'text-white/60 opacity-60'
-                  : 'text-white/30 opacity-30 hover:opacity-50'
-              }`}
+              className="w-full text-left font-black text-2xl md:text-3xl lg:text-4xl tracking-tighter leading-tight focus:outline-none py-1.5 origin-left block"
+              initial={{ opacity: 0.28, scale: 1 }}
+              animate={{
+                opacity: isActive ? 1 : isPassed ? 0.5 : 0.28,
+                scale: isActive ? 1.03 : 1,
+                color: isActive ? '#ffffff' : 'rgba(255, 255, 255, 0.9)',
+                filter: isActive ? 'drop-shadow(0 4px 12px rgba(255,255,255,0.18))' : 'none',
+              }}
+              transition={{ duration: 0.38, ease: [0.25, 1, 0.5, 1] }}
+              whileTap={{ scale: 0.96 }}
             >
               {line.text || '•••'}
-            </button>
+            </motion.button>
           );
         })}
       </div>
